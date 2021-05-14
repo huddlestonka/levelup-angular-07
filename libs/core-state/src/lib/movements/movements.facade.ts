@@ -1,28 +1,66 @@
 import { Injectable } from '@angular/core';
-
-import { select, Store, Action } from '@ngrx/store';
-
+import { Movement } from '@bba/api-interfaces';
+import { Action, ActionsSubject, select, Store } from '@ngrx/store';
+import { filter } from 'rxjs/operators';
+import { v4 as uuidv4 } from 'uuid';
 import * as MovementsActions from './movements.actions';
-import * as MovementsFeature from './movements.reducer';
+import * as fromMovements from './movements.reducer';
 import * as MovementsSelectors from './movements.selectors';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class MovementsFacade {
-  /**
-   * Combine pieces of state using createSelector,
-   * and expose them as observables through the facade.
-   */
   loaded$ = this.store.pipe(select(MovementsSelectors.getMovementsLoaded));
   allMovements$ = this.store.pipe(select(MovementsSelectors.getAllMovements));
-  selectedMovements$ = this.store.pipe(select(MovementsSelectors.getSelected));
+  selectedMovement$ = this.store.pipe(
+    select(MovementsSelectors.getSelectedMovement)
+  );
 
-  constructor(private store: Store) {}
+  mutations$ = this.actions$.pipe(
+    filter(
+      (action: Action) =>
+        action.type === MovementsActions.createMovement({} as any).type ||
+        action.type === MovementsActions.updateMovement({} as any).type ||
+        action.type === MovementsActions.deleteMovement({} as any).type
+    )
+  );
 
-  /**
-   * Use the initialization action to perform one
-   * or more tasks in your Effects.
-   */
-  init() {
-    this.store.dispatch(MovementsActions.init());
+  constructor(
+    private store: Store<fromMovements.MovementsPartialState>,
+    private actions$: ActionsSubject
+  ) {}
+
+  selectMovement(selectedId: string) {
+    this.dispatch(MovementsActions.selectMovement({ selectedId }));
+  }
+
+  loadMovements() {
+    this.dispatch(MovementsActions.loadMovements());
+  }
+
+  loadMovement(movementId: string) {
+    this.dispatch(MovementsActions.loadMovement({ movementId }));
+  }
+
+  createMovement(movement: Movement) {
+    // We are generate the UUID at the client because of a sqlite limitation
+    this.dispatch(
+      MovementsActions.createMovement({
+        movement: Object.assign({}, movement, { id: uuidv4() }),
+      })
+    );
+  }
+
+  updateMovement(movement: Movement) {
+    this.dispatch(MovementsActions.updateMovement({ movement }));
+  }
+
+  deleteMovement(movement: Movement) {
+    this.dispatch(MovementsActions.deleteMovement({ movement }));
+  }
+
+  dispatch(action: Action) {
+    this.store.dispatch(action);
   }
 }

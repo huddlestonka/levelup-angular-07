@@ -16,6 +16,8 @@ import { RoutingModule } from './routing.module';
 import { MaterialModule } from '@bba/material';
 import { UiToolbarModule } from '@bba/ui-toolbar';
 import { HttpClientModule } from '@angular/common/http';
+import { CoreStateModule } from '@bba/core-state';
+import { CoreDataModule } from '@bba/core-data';
 
 @NgModule({
   declarations: [
@@ -35,8 +37,9 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     RoutingModule,
     MaterialModule,
+    CoreStateModule,
+    CoreDataModule,
     UiToolbarModule,
-    StoreModule.forRoot({}, {}),
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,28 +1,95 @@
 import { Injectable } from '@angular/core';
-import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { fetch } from '@nrwl/angular';
-
-import * as MovementsFeature from './movements.reducer';
+import { Movement } from '@bba/api-interfaces';
+import { MovementsService } from '@bba/core-data';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { fetch, pessimisticUpdate } from '@nrwl/angular';
+import { map } from 'rxjs/operators';
 import * as MovementsActions from './movements.actions';
 
 @Injectable()
 export class MovementsEffects {
-  init$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(MovementsActions.init),
-      fetch({
-        run: (action) => {
-          // Your custom service 'load' logic goes here. For now just return a success action...
-          return MovementsActions.loadMovementsSuccess({ movements: [] });
-        },
-
-        onError: (action, error) => {
-          console.error('Error', error);
-          return MovementsActions.loadMovementsFailure({ error });
-        },
-      })
-    )
+  @Effect() loadMovements$ = this.actions$.pipe(
+    ofType(MovementsActions.loadMovements),
+    fetch({
+      run: (action) =>
+        this.movementsService
+          .all()
+          .pipe(
+            map((movements: Movement[]) =>
+              MovementsActions.loadMovementsSuccess({ movements })
+            )
+          ),
+      onError: (action, error) =>
+        MovementsActions.loadMovementsFailure({ error }),
+    })
   );
 
-  constructor(private actions$: Actions) {}
+  @Effect() loadMovement$ = this.actions$.pipe(
+    ofType(MovementsActions.loadMovement),
+    fetch({
+      run: (action) =>
+        this.movementsService
+          .find(action.movementId)
+          .pipe(
+            map((movement: Movement) =>
+              MovementsActions.loadMovementSuccess({ movement })
+            )
+          ),
+      onError: (action, error) =>
+        MovementsActions.loadMovementFailure({ error }),
+    })
+  );
+
+  @Effect() createMovement$ = this.actions$.pipe(
+    ofType(MovementsActions.createMovement),
+    pessimisticUpdate({
+      run: (action) =>
+        this.movementsService
+          .create(action.movement)
+          .pipe(
+            map((movement: Movement) =>
+              MovementsActions.createMovementSuccess({ movement })
+            )
+          ),
+      onError: (action, error) =>
+        MovementsActions.createMovementFailure({ error }),
+    })
+  );
+
+  @Effect() updateMovement$ = this.actions$.pipe(
+    ofType(MovementsActions.updateMovement),
+    pessimisticUpdate({
+      run: (action) =>
+        this.movementsService
+          .update(action.movement)
+          .pipe(
+            map((movement: Movement) =>
+              MovementsActions.updateMovementSuccess({ movement })
+            )
+          ),
+      onError: (action, error) =>
+        MovementsActions.updateMovementFailure({ error }),
+    })
+  );
+
+  @Effect() deleteMovement$ = this.actions$.pipe(
+    ofType(MovementsActions.deleteMovement),
+    pessimisticUpdate({
+      run: (action) =>
+        this.movementsService
+          .delete(action.movement)
+          .pipe(
+            map((movement: Movement) =>
+              MovementsActions.deleteMovementSuccess({ movement })
+            )
+          ),
+      onError: (action, error) =>
+        MovementsActions.deleteMovementFailure({ error }),
+    })
+  );
+
+  constructor(
+    private actions$: Actions,
+    private movementsService: MovementsService
+  ) {}
 }

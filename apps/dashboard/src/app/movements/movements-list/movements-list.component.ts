@@ -1,15 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Movement } from '@bba/api-interfaces';
 
 @Component({
   selector: 'bba-movements-list',
   templateUrl: './movements-list.component.html',
-  styleUrls: ['./movements-list.component.scss']
+  styleUrls: ['./movements-list.component.scss'],
 })
-export class MovementsListComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+export class MovementsListComponent {
+  @Input() movements: Movement[];
+  @Input() readonly = false;
+  @Output() selected = new EventEmitter();
+  @Output() deleted = new EventEmitter();
 }

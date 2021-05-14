@@ -1,28 +1,32 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StoreModule } from '@ngrx/store';
+import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
-import * as fromWorkouts from './workouts/workouts.reducer';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { RootStoreConfig, StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+
+import { reducers } from '.';
+
 import { WorkoutsEffects } from './workouts/workouts.effects';
-import { WorkoutsFacade } from './workouts/workouts.facade';
-import * as fromMovements from './movements/movements.reducer';
 import { MovementsEffects } from './movements/movements.effects';
-import { MovementsFacade } from './movements/movements.facade';
+
+const STORE_NAME = 'bba-store';
+const storeConfig: RootStoreConfig<any> = {
+  runtimeChecks: {
+    strictActionImmutability: true,
+    strictActionSerializability: true,
+    strictStateImmutability: true,
+    strictStateSerializability: true,
+  },
+};
 
 @NgModule({
   imports: [
     CommonModule,
-    StoreModule.forFeature(
-      fromWorkouts.WORKOUTS_FEATURE_KEY,
-      fromWorkouts.reducer
-    ),
-    EffectsModule.forFeature([WorkoutsEffects]),
-    StoreModule.forFeature(
-      fromMovements.MOVEMENTS_FEATURE_KEY,
-      fromMovements.reducer
-    ),
-    EffectsModule.forFeature([MovementsEffects]),
+    StoreModule.forRoot(reducers, storeConfig),
+    EffectsModule.forRoot([WorkoutsEffects, MovementsEffects]),
+    StoreDevtoolsModule.instrument({ maxAge: 25, name: STORE_NAME }),
+    StoreRouterConnectingModule.forRoot({ stateKey: 'router' }),
   ],
-  providers: [WorkoutsFacade, MovementsFacade],
 })
 export class CoreStateModule {}

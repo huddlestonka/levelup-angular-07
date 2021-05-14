@@ -1,46 +1,54 @@
+import { Movement } from '@bba/api-interfaces';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
   MOVEMENTS_FEATURE_KEY,
-  State,
-  MovementsPartialState,
+  MovementsState,
   movementsAdapter,
 } from './movements.reducer';
 
 // Lookup the 'Movements' feature state managed by NgRx
-export const getMovementsState = createFeatureSelector<
-  MovementsPartialState,
-  State
->(MOVEMENTS_FEATURE_KEY);
+export const getMovementsState = createFeatureSelector<MovementsState>(
+  MOVEMENTS_FEATURE_KEY
+);
 
 const { selectAll, selectEntities } = movementsAdapter.getSelectors();
 
 export const getMovementsLoaded = createSelector(
   getMovementsState,
-  (state: State) => state.loaded
+  (state: MovementsState) => state.loaded
 );
 
 export const getMovementsError = createSelector(
   getMovementsState,
-  (state: State) => state.error
+  (state: MovementsState) => state.error
 );
 
 export const getAllMovements = createSelector(
   getMovementsState,
-  (state: State) => selectAll(state)
+  (state: MovementsState) => selectAll(state)
 );
 
 export const getMovementsEntities = createSelector(
   getMovementsState,
-  (state: State) => selectEntities(state)
+  (state: MovementsState) => selectEntities(state)
 );
 
-export const getSelectedId = createSelector(
+export const getSelectedMovementId = createSelector(
   getMovementsState,
-  (state: State) => state.selectedId
+  (state: MovementsState) => state.selectedId
 );
 
-export const getSelected = createSelector(
+export const getSelectedMovement = createSelector(
   getMovementsEntities,
-  getSelectedId,
-  (entities, selectedId) => selectedId && entities[selectedId]
+  getSelectedMovementId,
+  (entities, selectedId) => {
+    const emptyMovement: Movement = {
+      id: null,
+      title: '',
+      description: '',
+      workoutId: null,
+    };
+
+    return selectedId ? entities[selectedId] : emptyMovement;
+  }
 );

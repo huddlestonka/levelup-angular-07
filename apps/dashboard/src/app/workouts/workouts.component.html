@@ -1,1 +1,18 @@
-<p>workouts works!</p>
+<div class="component-container">
+  <div class="list-component">
+    <bba-workouts-list
+      [workouts]="workouts$ | async"
+      (selected)="selectWorkout($event)"
+      (deleted)="deleteWorkout($event)"
+    >
+    </bba-workouts-list>
+  </div>
+  <div class="details-component">
+    <bba-workout-details
+      [workout]="selectedWorkout$ | async"
+      (saved)="saveWorkout($event)"
+      (cancelled)="resetForm()"
+    >
+    </bba-workout-details>
+  </div>
+</div>

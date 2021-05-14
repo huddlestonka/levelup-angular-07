@@ -1,1 +1,70 @@
-<p>movement-details works!</p>
+<mat-card>
+  <mat-card-title data-cy="movement-details-title">
+    <span *ngIf="currentMovement.id; else elseBlock">
+      Editing {{ originalTitle }}
+    </span>
+    <ng-template #elseBlock> Select Movement </ng-template>
+  </mat-card-title>
+  <form
+    #form="ngForm"
+    (submit)="saved.emit(currentMovement)"
+    data-cy="movement-form"
+  >
+    <mat-card-content>
+      <mat-form-field class="full-width">
+        <input
+          matInput
+          placeholder="Title"
+          data-cy="movement-form-title"
+          [(ngModel)]="currentMovement.title"
+          type="text"
+          name="title"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field class="full-width">
+        <input
+          matInput
+          placeholder="Description"
+          data-cy="movement-form-description"
+          [(ngModel)]="currentMovement.description"
+          type="text"
+          name="description"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field class="full-width">
+        <mat-label>Select a Workout</mat-label>
+        <mat-select
+          [(ngModel)]="currentMovement.workoutId"
+          data-cy="movement-form-workout"
+          required="false"
+          name="workoutId"
+        >
+          <mat-option *ngFor="let workout of workouts" [value]="workout.id">
+            {{ workout.title }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+      <button
+        [disabled]="form.invalid"
+        type="submit"
+        mat-button
+        color="primary"
+        data-cy="movement-form-save"
+      >
+        Save
+      </button>
+      <button
+        type="button"
+        mat-button
+        (click)="form.reset(); cancelled.emit()"
+        data-cy="movement-form-cancel"
+      >
+        Cancel
+      </button>
+    </mat-card-actions>
+  </form>
+</mat-card>

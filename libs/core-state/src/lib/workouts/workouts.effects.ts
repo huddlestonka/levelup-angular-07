@@ -1,28 +1,94 @@
 import { Injectable } from '@angular/core';
-import { createEffect, Actions, ofType } from '@ngrx/effects';
-import { fetch } from '@nrwl/angular';
-
-import * as WorkoutsFeature from './workouts.reducer';
+import { Workout } from '@bba/api-interfaces';
+import { WorkoutsService } from '@bba/core-data';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { fetch, pessimisticUpdate } from '@nrwl/angular';
+import { map } from 'rxjs/operators';
 import * as WorkoutsActions from './workouts.actions';
 
 @Injectable()
 export class WorkoutsEffects {
-  init$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(WorkoutsActions.init),
-      fetch({
-        run: (action) => {
-          // Your custom service 'load' logic goes here. For now just return a success action...
-          return WorkoutsActions.loadWorkoutsSuccess({ workouts: [] });
-        },
-
-        onError: (action, error) => {
-          console.error('Error', error);
-          return WorkoutsActions.loadWorkoutsFailure({ error });
-        },
-      })
-    )
+  @Effect() loadWorkouts$ = this.actions$.pipe(
+    ofType(WorkoutsActions.loadWorkouts),
+    fetch({
+      run: (action) =>
+        this.workoutsService
+          .all()
+          .pipe(
+            map((workouts: Workout[]) =>
+              WorkoutsActions.loadWorkoutsSuccess({ workouts })
+            )
+          ),
+      onError: (action, error) =>
+        WorkoutsActions.loadWorkoutsFailure({ error }),
+    })
   );
 
-  constructor(private actions$: Actions) {}
+  @Effect() loadWorkout$ = this.actions$.pipe(
+    ofType(WorkoutsActions.loadWorkout),
+    fetch({
+      run: (action) =>
+        this.workoutsService
+          .find(action.workoutId)
+          .pipe(
+            map((workout: Workout) =>
+              WorkoutsActions.loadWorkoutSuccess({ workout })
+            )
+          ),
+      onError: (action, error) => WorkoutsActions.loadWorkoutFailure({ error }),
+    })
+  );
+
+  @Effect() createWorkout$ = this.actions$.pipe(
+    ofType(WorkoutsActions.createWorkout),
+    pessimisticUpdate({
+      run: (action) =>
+        this.workoutsService
+          .create(action.workout)
+          .pipe(
+            map((workout: Workout) =>
+              WorkoutsActions.createWorkoutSuccess({ workout })
+            )
+          ),
+      onError: (action, error) =>
+        WorkoutsActions.createWorkoutFailure({ error }),
+    })
+  );
+
+  @Effect() updateWorkout$ = this.actions$.pipe(
+    ofType(WorkoutsActions.updateWorkout),
+    pessimisticUpdate({
+      run: (action) =>
+        this.workoutsService
+          .update(action.workout)
+          .pipe(
+            map((workout: Workout) =>
+              WorkoutsActions.updateWorkoutSuccess({ workout })
+            )
+          ),
+      onError: (action, error) =>
+        WorkoutsActions.updateWorkoutFailure({ error }),
+    })
+  );
+
+  @Effect() deleteWorkout$ = this.actions$.pipe(
+    ofType(WorkoutsActions.deleteWorkout),
+    pessimisticUpdate({
+      run: (action) =>
+        this.workoutsService
+          .delete(action.workout)
+          .pipe(
+            map((workout: Workout) =>
+              WorkoutsActions.deleteWorkoutSuccess({ workout })
+            )
+          ),
+      onError: (action, error) =>
+        WorkoutsActions.deleteWorkoutFailure({ error }),
+    })
+  );
+
+  constructor(
+    private actions$: Actions,
+    private workoutsService: WorkoutsService
+  ) {}
 }

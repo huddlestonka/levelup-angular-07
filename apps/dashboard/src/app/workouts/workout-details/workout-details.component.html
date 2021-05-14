@@ -1,1 +1,57 @@
-<p>workout-details works!</p>
+<mat-card>
+  <mat-card-title data-cy="workout-details-title">
+    <span *ngIf="currentWorkout.id; else elseBlock">
+      Editing {{ originalTitle }}
+    </span>
+    <ng-template #elseBlock> Select Workout </ng-template>
+  </mat-card-title>
+  <form
+    #form="ngForm"
+    (submit)="saved.emit(currentWorkout)"
+    data-cy="workout-form"
+  >
+    <mat-card-content>
+      <mat-form-field class="full-width">
+        <input
+          matInput
+          placeholder="Title"
+          data-cy="workout-form-title"
+          [(ngModel)]="currentWorkout.title"
+          type="text"
+          name="title"
+          required
+        />
+      </mat-form-field>
+      <mat-form-field class="full-width">
+        <input
+          matInput
+          placeholder="Description"
+          data-cy="workout-form-description"
+          [(ngModel)]="currentWorkout.description"
+          type="text"
+          name="description"
+          required
+        />
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+      <button
+        [disabled]="form.invalid"
+        type="submit"
+        mat-button
+        color="primary"
+        data-cy="workout-form-save"
+      >
+        Save
+      </button>
+      <button
+        type="button"
+        mat-button
+        (click)="form.reset(); cancelled.emit()"
+        data-cy="workout-form-cancel"
+      >
+        Cancel
+      </button>
+    </mat-card-actions>
+  </form>
+</mat-card>

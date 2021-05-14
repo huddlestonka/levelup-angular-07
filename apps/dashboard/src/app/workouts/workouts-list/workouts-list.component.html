@@ -1,1 +1,27 @@
-<p>workouts-list works!</p>
+<mat-card>
+  <mat-card-title> Workouts </mat-card-title>
+  <mat-card-content>
+    <mat-list data-cy="workouts-list">
+      <mat-list-item
+        *ngFor="let workout of workouts"
+        attr.data-cy="workout-{{ workout.id }}-item"
+        class="mat-list-option"
+        (click)="selected.emit(workout)"
+      >
+        <span matLine attr.data-cy="workout-{{ workout.id }}-item-title">{{
+          workout.title
+        }}</span>
+        <button
+          *ngIf="!readonly"
+          attr.data-cy="delete-workout-{{ workout.id }}-btn"
+          mat-icon-button
+          type="button"
+          color="warn"
+          (click)="deleted.emit(workout); $event.stopImmediatePropagation()"
+        >
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
+</mat-card>

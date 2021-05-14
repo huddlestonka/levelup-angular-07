@@ -1,1 +1,21 @@
-<p>home works!</p>
+<div class="home-container" data-cy="home-workout-cards">
+  <mat-card
+    *ngFor="let workout of workoutMovements$ | async"
+    attr.data-cy="home-workout-{{ workout.id }}-card"
+  >
+    <mat-card-header>
+      <mat-card-title attr.data-cy="home-workout-{{ workout.id }}-title">
+        {{ workout.title }}
+      </mat-card-title>
+      <mat-card-subtitle>{{ workout.description }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <bba-movements-list
+        attr.data-cy="home-workout-{{ workout.id }}-movements"
+        [movements]="workout.movements"
+        [readonly]="true"
+      >
+      </bba-movements-list>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,1 +1,28 @@
-<p>movements-list works!</p>
+<mat-card>
+  <mat-card-title> Movements </mat-card-title>
+  <mat-card-content>
+    <mat-list data-cy="movements-list">
+      <mat-list-item
+        *ngFor="let movement of movements"
+        attr.data-cy="movement-{{ movement.id }}-item"
+        class="mat-list-option"
+        (click)="selected.emit(movement)"
+        data-cy="list-item"
+      >
+        <span matLine attr.data-cy="movement-{{ movement.id }}-item-title">{{
+          movement.title
+        }}</span>
+        <button
+          *ngIf="!readonly"
+          attr.data-cy="delete-movement-{{ movement.id }}-btn"
+          mat-icon-button
+          type="button"
+          color="warn"
+          (click)="deleted.emit(movement); $event.stopImmediatePropagation()"
+        >
+          <mat-icon>clear</mat-icon>
+        </button>
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
+</mat-card>

@@ -1,45 +1,53 @@
+import { Workout } from '@bba/api-interfaces';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
   WORKOUTS_FEATURE_KEY,
-  State,
-  WorkoutsPartialState,
+  WorkoutsState,
   workoutsAdapter,
 } from './workouts.reducer';
 
 // Lookup the 'Workouts' feature state managed by NgRx
-export const getWorkoutsState = createFeatureSelector<
-  WorkoutsPartialState,
-  State
->(WORKOUTS_FEATURE_KEY);
+export const getWorkoutsState = createFeatureSelector<WorkoutsState>(
+  WORKOUTS_FEATURE_KEY
+);
 
 const { selectAll, selectEntities } = workoutsAdapter.getSelectors();
 
 export const getWorkoutsLoaded = createSelector(
   getWorkoutsState,
-  (state: State) => state.loaded
+  (state: WorkoutsState) => state.loaded
 );
 
 export const getWorkoutsError = createSelector(
   getWorkoutsState,
-  (state: State) => state.error
+  (state: WorkoutsState) => state.error
 );
 
-export const getAllWorkouts = createSelector(getWorkoutsState, (state: State) =>
-  selectAll(state)
+export const getAllWorkouts = createSelector(
+  getWorkoutsState,
+  (state: WorkoutsState) => selectAll(state)
 );
 
 export const getWorkoutsEntities = createSelector(
   getWorkoutsState,
-  (state: State) => selectEntities(state)
+  (state: WorkoutsState) => selectEntities(state)
 );
 
-export const getSelectedId = createSelector(
+export const getSelectedWorkoutId = createSelector(
   getWorkoutsState,
-  (state: State) => state.selectedId
+  (state: WorkoutsState) => state.selectedId
 );
 
-export const getSelected = createSelector(
+export const getSelectedWorkout = createSelector(
   getWorkoutsEntities,
-  getSelectedId,
-  (entities, selectedId) => selectedId && entities[selectedId]
+  getSelectedWorkoutId,
+  (entities, selectedId) => {
+    const emptyWorkout: Workout = {
+      id: null,
+      title: '',
+      description: '',
+    };
+
+    return selectedId ? entities[selectedId] : emptyWorkout;
+  }
 );

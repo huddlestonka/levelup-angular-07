@@ -1,0 +1,48 @@
+{
+  "workouts": [
+    {
+      "id": "69550e9f-f8ef-480d-8318-f2670e414389",
+      "title": "CrossFit Sample",
+      "description": "A Workout of Various CrossFit Movements",
+      "movements": [
+        {
+          "id": "8cc1aae2-4919-442f-a7f7-1d82efa2ade2",
+          "title": "The Kipping Handstand Push-up",
+          "description": "Do a vertical push-up",
+          "workoutId": "69550e9f-f8ef-480d-8318-f2670e414389"
+        },
+        {
+          "id": "21a4beb5-6bf0-4ce1-aa00-cd19e0da9b85",
+          "title": "The Clean and Push Jerk",
+          "description": "Clean the weight and shove it above your head.. Sounds safe.",
+          "workoutId": "69550e9f-f8ef-480d-8318-f2670e414389"
+        }
+      ]
+    },
+    {
+      "id": "e619d3c2-00e6-4aa5-8fde-b29692553572",
+      "title": "5k Run",
+      "description": "Run 3.1miles ludicrous speed"
+    }
+  ],
+  "movements": [
+    {
+      "id": "8cc1aae2-4919-442f-a7f7-1d82efa2ade2",
+      "title": "The Kipping Handstand Push-up",
+      "description": "Do a vertical push-up",
+      "workoutId": "69550e9f-f8ef-480d-8318-f2670e414389"
+    },
+    {
+      "id": "21a4beb5-6bf0-4ce1-aa00-cd19e0da9b85",
+      "title": "The Clean and Push Jerk",
+      "description": "Clean the weight and shove it above your head.. Sounds safe.",
+      "workoutId": "69550e9f-f8ef-480d-8318-f2670e414389"
+    },
+    {
+      "id": "9380ab12-9b47-4c92-a2e4-68703c5a63e8",
+      "title": "Literally just running",
+      "description": "RUN",
+      "workoutId": "e619d3c2-00e6-4aa5-8fde-b29692553572"
+    }
+  ]
+}
