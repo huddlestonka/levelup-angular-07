@@ -1,121 +1,108 @@
-import { NgModule } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { readFirst } from '@nrwl/angular/testing';
+import { ActionsSubject } from '@ngrx/store';
+import { MockStore, provideMockStore } from '@ngrx/store/testing';
 
-import { EffectsModule } from '@ngrx/effects';
-import { StoreModule, Store } from '@ngrx/store';
-
-import { NxModule } from '@nrwl/angular';
-
-import { WorkoutsEntity } from './workouts.models';
-import { WorkoutsEffects } from './workouts.effects';
 import { WorkoutsFacade } from './workouts.facade';
-
-import * as WorkoutsSelectors from './workouts.selectors';
 import * as WorkoutsActions from './workouts.actions';
-import {
-  WORKOUTS_FEATURE_KEY,
-  State,
-  initialState,
-  reducer,
-} from './workouts.reducer';
+import { initialWorkoutsState } from './workouts.reducer';
 
-interface TestSchema {
-  workouts: State;
-}
+import { mockWorkout } from '@bba/testing';
 
 describe('WorkoutsFacade', () => {
   let facade: WorkoutsFacade;
-  let store: Store<TestSchema>;
-  const createWorkoutsEntity = (id: string, name = '') =>
-    ({
-      id,
-      name: name || `name-${id}`,
-    } as WorkoutsEntity);
+  let actionSubject;
+  const mockActionsSubject = new ActionsSubject();
+  let store: MockStore;
 
-  beforeEach(() => {});
-
-  describe('used in NgModule', () => {
-    beforeEach(() => {
-      @NgModule({
-        imports: [
-          StoreModule.forFeature(WORKOUTS_FEATURE_KEY, reducer),
-          EffectsModule.forFeature([WorkoutsEffects]),
-        ],
-        providers: [WorkoutsFacade],
-      })
-      class CustomFeatureModule {}
-
-      @NgModule({
-        imports: [
-          NxModule.forRoot(),
-          StoreModule.forRoot({}),
-          EffectsModule.forRoot([]),
-          CustomFeatureModule,
-        ],
-      })
-      class RootModule {}
-      TestBed.configureTestingModule({ imports: [RootModule] });
-
-      store = TestBed.inject(Store);
-      facade = TestBed.inject(WorkoutsFacade);
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        WorkoutsFacade,
+        provideMockStore({ initialState: initialWorkoutsState }),
+        { provide: ActionsSubject, useValue: mockActionsSubject },
+      ],
     });
 
-    /**
-     * The initially generated facade::loadAll() returns empty array
-     */
-    it('loadAll() should return empty list with loaded == true', async (done) => {
-      try {
-        let list = await readFirst(facade.allWorkouts$);
-        let isLoaded = await readFirst(facade.loaded$);
+    facade = TestBed.inject(WorkoutsFacade);
+    actionSubject = TestBed.inject(ActionsSubject);
+    store = TestBed.inject(MockStore);
+  });
 
-        expect(list.length).toBe(0);
-        expect(isLoaded).toBe(false);
+  it('should be created', () => {
+    expect(facade).toBeTruthy();
+  });
 
-        facade.init();
+  it('should have mutations', (done) => {
+    const action = WorkoutsActions.createWorkout({ workout: mockWorkout });
+    actionSubject.next(action);
 
-        list = await readFirst(facade.allWorkouts$);
-        isLoaded = await readFirst(facade.loaded$);
+    facade.mutations$.subscribe((result) => {
+      expect(result).toBe(action);
+      done();
+    });
+  });
 
-        expect(list.length).toBe(0);
-        expect(isLoaded).toBe(true);
+  describe('should dispatch', () => {
+    it('select on select(workout.id)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
 
-        done();
-      } catch (err) {
-        done.fail(err);
-      }
+      facade.selectWorkout(mockWorkout.id);
+
+      const action = WorkoutsActions.selectWorkout({
+        selectedId: mockWorkout.id,
+      });
+
+      expect(spy).toHaveBeenCalledWith(action);
     });
 
-    /**
-     * Use `loadWorkoutsSuccess` to manually update list
-     */
-    it('allWorkouts$ should return the loaded list; and loaded flag == true', async (done) => {
-      try {
-        let list = await readFirst(facade.allWorkouts$);
-        let isLoaded = await readFirst(facade.loaded$);
+    it('loadWorkouts on loadWorkouts()', () => {
+      const spy = jest.spyOn(store, 'dispatch');
 
-        expect(list.length).toBe(0);
-        expect(isLoaded).toBe(false);
+      facade.loadWorkouts();
 
-        store.dispatch(
-          WorkoutsActions.loadWorkoutsSuccess({
-            workouts: [
-              createWorkoutsEntity('AAA'),
-              createWorkoutsEntity('BBB'),
-            ],
-          })
-        );
+      const action = WorkoutsActions.loadWorkouts();
 
-        list = await readFirst(facade.allWorkouts$);
-        isLoaded = await readFirst(facade.loaded$);
+      expect(spy).toHaveBeenCalledWith(action);
+    });
 
-        expect(list.length).toBe(2);
-        expect(isLoaded).toBe(true);
+    it('loadWorkout on loadWorkout(workout.id)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
 
-        done();
-      } catch (err) {
-        done.fail(err);
-      }
+      facade.loadWorkout(mockWorkout.id);
+
+      const action = WorkoutsActions.loadWorkout({ workoutId: mockWorkout.id });
+
+      expect(spy).toHaveBeenCalledWith(action);
+    });
+
+    it('createWorkout on createWorkout(workout)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
+
+      facade.createWorkout(mockWorkout);
+
+      const action = WorkoutsActions.createWorkout({ workout: mockWorkout });
+
+      expect(spy).toHaveBeenCalledWith(action);
+    });
+
+    it('updateWorkout on updateWorkout(workout)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
+
+      facade.updateWorkout(mockWorkout);
+
+      const action = WorkoutsActions.updateWorkout({ workout: mockWorkout });
+
+      expect(spy).toHaveBeenCalledWith(action);
+    });
+
+    it('delete on delete(model)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
+
+      facade.deleteWorkout(mockWorkout);
+
+      const action = WorkoutsActions.deleteWorkout({ workout: mockWorkout });
+
+      expect(spy).toHaveBeenCalledWith(action);
     });
   });
 });

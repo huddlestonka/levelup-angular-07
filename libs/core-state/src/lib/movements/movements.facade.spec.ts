@@ -1,121 +1,116 @@
-import { NgModule } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { readFirst } from '@nrwl/angular/testing';
+import { ActionsSubject } from '@ngrx/store';
+import { MockStore, provideMockStore } from '@ngrx/store/testing';
 
-import { EffectsModule } from '@ngrx/effects';
-import { StoreModule, Store } from '@ngrx/store';
-
-import { NxModule } from '@nrwl/angular';
-
-import { MovementsEntity } from './movements.models';
-import { MovementsEffects } from './movements.effects';
 import { MovementsFacade } from './movements.facade';
-
-import * as MovementsSelectors from './movements.selectors';
 import * as MovementsActions from './movements.actions';
-import {
-  MOVEMENTS_FEATURE_KEY,
-  State,
-  initialState,
-  reducer,
-} from './movements.reducer';
+import { initialMovementsState } from './movements.reducer';
 
-interface TestSchema {
-  movements: State;
-}
+import { mockMovement } from '@bba/testing';
 
 describe('MovementsFacade', () => {
   let facade: MovementsFacade;
-  let store: Store<TestSchema>;
-  const createMovementsEntity = (id: string, name = '') =>
-    ({
-      id,
-      name: name || `name-${id}`,
-    } as MovementsEntity);
+  let actionSubject;
+  const mockActionsSubject = new ActionsSubject();
+  let store: MockStore;
 
-  beforeEach(() => {});
-
-  describe('used in NgModule', () => {
-    beforeEach(() => {
-      @NgModule({
-        imports: [
-          StoreModule.forFeature(MOVEMENTS_FEATURE_KEY, reducer),
-          EffectsModule.forFeature([MovementsEffects]),
-        ],
-        providers: [MovementsFacade],
-      })
-      class CustomFeatureModule {}
-
-      @NgModule({
-        imports: [
-          NxModule.forRoot(),
-          StoreModule.forRoot({}),
-          EffectsModule.forRoot([]),
-          CustomFeatureModule,
-        ],
-      })
-      class RootModule {}
-      TestBed.configureTestingModule({ imports: [RootModule] });
-
-      store = TestBed.inject(Store);
-      facade = TestBed.inject(MovementsFacade);
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        MovementsFacade,
+        provideMockStore({ initialState: initialMovementsState }),
+        { provide: ActionsSubject, useValue: mockActionsSubject },
+      ],
     });
 
-    /**
-     * The initially generated facade::loadAll() returns empty array
-     */
-    it('loadAll() should return empty list with loaded == true', async (done) => {
-      try {
-        let list = await readFirst(facade.allMovements$);
-        let isLoaded = await readFirst(facade.loaded$);
+    facade = TestBed.inject(MovementsFacade);
+    actionSubject = TestBed.inject(ActionsSubject);
+    store = TestBed.inject(MockStore);
+  });
 
-        expect(list.length).toBe(0);
-        expect(isLoaded).toBe(false);
+  it('should be created', () => {
+    expect(facade).toBeTruthy();
+  });
 
-        facade.init();
+  it('should have mutations', (done) => {
+    const action = MovementsActions.createMovement({ movement: mockMovement });
+    actionSubject.next(action);
 
-        list = await readFirst(facade.allMovements$);
-        isLoaded = await readFirst(facade.loaded$);
+    facade.mutations$.subscribe((result) => {
+      expect(result).toBe(action);
+      done();
+    });
+  });
 
-        expect(list.length).toBe(0);
-        expect(isLoaded).toBe(true);
+  describe('should dispatch', () => {
+    it('select on select(movement.id)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
 
-        done();
-      } catch (err) {
-        done.fail(err);
-      }
+      facade.selectMovement(mockMovement.id);
+
+      const action = MovementsActions.selectMovement({
+        selectedId: mockMovement.id,
+      });
+
+      expect(spy).toHaveBeenCalledWith(action);
     });
 
-    /**
-     * Use `loadMovementsSuccess` to manually update list
-     */
-    it('allMovements$ should return the loaded list; and loaded flag == true', async (done) => {
-      try {
-        let list = await readFirst(facade.allMovements$);
-        let isLoaded = await readFirst(facade.loaded$);
+    it('loadMovements on loadMovements()', () => {
+      const spy = jest.spyOn(store, 'dispatch');
 
-        expect(list.length).toBe(0);
-        expect(isLoaded).toBe(false);
+      facade.loadMovements();
 
-        store.dispatch(
-          MovementsActions.loadMovementsSuccess({
-            movements: [
-              createMovementsEntity('AAA'),
-              createMovementsEntity('BBB'),
-            ],
-          })
-        );
+      const action = MovementsActions.loadMovements();
 
-        list = await readFirst(facade.allMovements$);
-        isLoaded = await readFirst(facade.loaded$);
+      expect(spy).toHaveBeenCalledWith(action);
+    });
 
-        expect(list.length).toBe(2);
-        expect(isLoaded).toBe(true);
+    it('loadMovement on loadMovement(movement.id)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
 
-        done();
-      } catch (err) {
-        done.fail(err);
-      }
+      facade.loadMovement(mockMovement.id);
+
+      const action = MovementsActions.loadMovement({
+        movementId: mockMovement.id,
+      });
+
+      expect(spy).toHaveBeenCalledWith(action);
+    });
+
+    it('createMovement on createMovement(movement)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
+
+      facade.createMovement(mockMovement);
+
+      const action = MovementsActions.createMovement({
+        movement: mockMovement,
+      });
+
+      expect(spy).toHaveBeenCalledWith(action);
+    });
+
+    it('updateMovement on updateMovement(movement)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
+
+      facade.updateMovement(mockMovement);
+
+      const action = MovementsActions.updateMovement({
+        movement: mockMovement,
+      });
+
+      expect(spy).toHaveBeenCalledWith(action);
+    });
+
+    it('delete on delete(model)', () => {
+      const spy = jest.spyOn(store, 'dispatch');
+
+      facade.deleteMovement(mockMovement);
+
+      const action = MovementsActions.deleteMovement({
+        movement: mockMovement,
+      });
+
+      expect(spy).toHaveBeenCalledWith(action);
     });
   });
 });

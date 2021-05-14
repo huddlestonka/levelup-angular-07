@@ -1,15 +1,18 @@
-import { WorkoutsEntity } from './workouts.models';
-import { State, workoutsAdapter, initialState } from './workouts.reducer';
+import {
+  WorkoutsState,
+  workoutsAdapter,
+  initialWorkoutsState,
+} from './workouts.reducer';
 import * as WorkoutsSelectors from './workouts.selectors';
+
+import { Workout } from '@bba/api-interfaces';
+import { mockWorkout } from '@bba/testing';
 
 describe('Workouts Selectors', () => {
   const ERROR_MSG = 'No Error Available';
   const getWorkoutsId = (it) => it['id'];
-  const createWorkoutsEntity = (id: string, name = '') =>
-    ({
-      id,
-      name: name || `name-${id}`,
-    } as WorkoutsEntity);
+  const createWorkout = (id: string, name = '') =>
+    ({ ...mockWorkout, id: id } as Workout);
 
   let state;
 
@@ -17,12 +20,12 @@ describe('Workouts Selectors', () => {
     state = {
       workouts: workoutsAdapter.setAll(
         [
-          createWorkoutsEntity('PRODUCT-AAA'),
-          createWorkoutsEntity('PRODUCT-BBB'),
-          createWorkoutsEntity('PRODUCT-CCC'),
+          createWorkout('PRODUCT-AAA'),
+          createWorkout('PRODUCT-BBB'),
+          createWorkout('PRODUCT-CCC'),
         ],
         {
-          ...initialState,
+          ...initialWorkoutsState,
           selectedId: 'PRODUCT-BBB',
           error: ERROR_MSG,
           loaded: true,
@@ -41,7 +44,7 @@ describe('Workouts Selectors', () => {
     });
 
     it('getSelected() should return the selected Entity', () => {
-      const result = WorkoutsSelectors.getSelected(state);
+      const result = WorkoutsSelectors.getSelectedWorkout(state);
       const selId = getWorkoutsId(result);
 
       expect(selId).toBe('PRODUCT-BBB');

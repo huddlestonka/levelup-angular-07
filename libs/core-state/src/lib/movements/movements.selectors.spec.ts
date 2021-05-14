@@ -1,15 +1,18 @@
-import { MovementsEntity } from './movements.models';
-import { State, movementsAdapter, initialState } from './movements.reducer';
+import {
+  MovementsState,
+  movementsAdapter,
+  initialMovementsState,
+} from './movements.reducer';
 import * as MovementsSelectors from './movements.selectors';
+
+import { Movement } from '@bba/api-interfaces';
+import { mockMovement } from '@bba/testing';
 
 describe('Movements Selectors', () => {
   const ERROR_MSG = 'No Error Available';
   const getMovementsId = (it) => it['id'];
-  const createMovementsEntity = (id: string, name = '') =>
-    ({
-      id,
-      name: name || `name-${id}`,
-    } as MovementsEntity);
+  const createMovement = (id: string, name = '') =>
+    ({ ...mockMovement, id: id } as Movement);
 
   let state;
 
@@ -17,12 +20,12 @@ describe('Movements Selectors', () => {
     state = {
       movements: movementsAdapter.setAll(
         [
-          createMovementsEntity('PRODUCT-AAA'),
-          createMovementsEntity('PRODUCT-BBB'),
-          createMovementsEntity('PRODUCT-CCC'),
+          createMovement('PRODUCT-AAA'),
+          createMovement('PRODUCT-BBB'),
+          createMovement('PRODUCT-CCC'),
         ],
         {
-          ...initialState,
+          ...initialMovementsState,
           selectedId: 'PRODUCT-BBB',
           error: ERROR_MSG,
           loaded: true,
@@ -41,7 +44,7 @@ describe('Movements Selectors', () => {
     });
 
     it('getSelected() should return the selected Entity', () => {
-      const result = MovementsSelectors.getSelected(state);
+      const result = MovementsSelectors.getSelectedMovement(state);
       const selId = getMovementsId(result);
 
       expect(selId).toBe('PRODUCT-BBB');
