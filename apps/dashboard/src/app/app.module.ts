@@ -11,10 +11,33 @@ import { MovementsComponent } from './movements/movements.component';
 import { MovementDetailsComponent } from './movements/movement-details/movement-details.component';
 import { MovementsListComponent } from './movements/movements-list/movements-list.component';
 import { HomeComponent } from './home/home.component';
+import { FormsModule } from '@angular/forms';
+import { RoutingModule } from './routing.module';
+import { MaterialModule } from '@bba/material';
+import { UiToolbarModule } from '@bba/ui-toolbar';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [AppComponent, WorkoutsComponent, WorkoutDetailsComponent, WorkoutsListComponent, MovementsComponent, MovementDetailsComponent, MovementsListComponent, HomeComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, StoreModule.forRoot({}, {})],
+  declarations: [
+    AppComponent,
+    WorkoutsComponent,
+    WorkoutDetailsComponent,
+    WorkoutsListComponent,
+    MovementsComponent,
+    MovementDetailsComponent,
+    MovementsListComponent,
+    HomeComponent,
+  ],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    RoutingModule,
+    MaterialModule,
+    UiToolbarModule,
+    StoreModule.forRoot({}, {}),
+  ],
   providers: [],
   bootstrap: [AppComponent],
 })
