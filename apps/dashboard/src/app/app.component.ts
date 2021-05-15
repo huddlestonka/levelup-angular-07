@@ -14,7 +14,7 @@ export enum SidenavStatus {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'Reactive Application';
+  title = 'Workout Dashboard';
   links = [
     { path: '/', icon: 'home', title: 'home' },
     { path: '/workouts', icon: 'view_list', title: 'workouts' },
