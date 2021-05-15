@@ -10,7 +10,7 @@ import {
 } from '../../../support/pages/app.po';
 
 Before(() => {
-  cy.loadData(['courses', 'lessons', 'users']);
+  cy.loadData(['workouts', 'movements']);
   cy.visit('/');
 });
 

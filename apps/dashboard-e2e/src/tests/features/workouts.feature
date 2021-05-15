@@ -1,45 +1,45 @@
-Feature: Courses
+Feature: Workouts
 
   As an autheticated user
-  I need to be able to work with courses
+  I need to be able to work with workouts
 
-  Scenario: Navigate to courses
+  Scenario: Navigate to workouts
     Given I am on the home page
-    And I navigate to the "courses" page
-    Then I should see "courses" in the URL
+    And I navigate to the "workouts" page
+    Then I should see "workouts" in the URL
 
-  Scenario: View a list of courses
-    Given I am on the "courses" page
-    Then I should see courses in the courses list
+  Scenario: View a list of workouts
+    Given I am on the "workouts" page
+    Then I should see workouts in the workouts list
 
-  Scenario: Create a course
-    Given I am on the "courses" page
-    And I have just created a new course
-    Then I should see that course in the courses list
+  Scenario: Create a workout
+    Given I am on the "workouts" page
+    And I have just created a new workout
+    Then I should see that workout in the workouts list
 
-  Scenario: Select a course
-    Given I am on the "courses" page
-    And I have just created a new course
-    And I select the new course
-    Then I should see the new course details
+  Scenario: Select a workout
+    Given I am on the "workouts" page
+    And I have just created a new workout
+    And I select the new workout
+    Then I should see the new workout details
 
-  Scenario: Cancel course selection
-    Given I am on the "courses" page
-    And I have just created a new course
-    And I select the new course
+  Scenario: Cancel workout selection
+    Given I am on the "workouts" page
+    And I have just created a new workout
+    And I select the new workout
     And I click on the cancel button
     Then I should see the details form reset
 
-  Scenario: Update a course
-    Given I am on the "courses" page
-    And I have just created a new course
-    And I select the new course
-    And I update the course
-    And I select the updated course
-    Then I should see the updated course details
+  Scenario: Update a workout
+    Given I am on the "workouts" page
+    And I have just created a new workout
+    And I select the new workout
+    And I update the workout
+    And I select the updated workout
+    Then I should see the updated workout details
 
-  Scenario: Delete a course
-    Given I am on the "courses" page
-    And I have just created a new course
-    And I delete the new course
-    Then I should not see the new course in the list
+  Scenario: Delete a workout
+    Given I am on the "workouts" page
+    And I have just created a new workout
+    And I delete the new workout
+    Then I should not see the new workout in the list

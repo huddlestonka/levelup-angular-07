@@ -19,7 +19,7 @@ let workouts = null;
 
 Before(() => {
   cy.fixture('workouts').then((json) => (workouts = json));
-  cy.loadData(['workouts', 'lessons']);
+  cy.loadData(['workouts', 'movements']);
   cy.visit(state.homeRoute);
 });
 

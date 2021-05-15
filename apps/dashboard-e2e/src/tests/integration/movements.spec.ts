@@ -16,7 +16,7 @@ describe('Movements', () => {
 
   before(() => {
     cy.fixture('movements').then((json) => (movements = json));
-    cy.loadData(['courses', 'movements']);
+    cy.loadData(['workouts', 'movements']);
     cy.visit(state.route);
   });
 
@@ -30,7 +30,7 @@ describe('Movements', () => {
 
   it('should create a movement', () => {
     cy.createEntity(model, state.newMockMovement);
-    cy.loadData(['courses']);
+    cy.loadData(['workouts']);
     completeNewMovementForm(state.newMockMovement);
     getMovementItem(state.newMockMovement).should('exist');
   });
@@ -52,7 +52,7 @@ describe('Movements', () => {
 
   it('should update a movement', () => {
     cy.updateEntity(model, state.updatedMockMovement);
-    cy.loadData(['courses']);
+    cy.loadData(['workouts']);
     selectMovement(state.updatedMockMovement);
     completeUpdateMovementForm(state.updatedMockMovement);
     getMovementItem(state.updatedMockMovement).should('exist');
@@ -60,7 +60,7 @@ describe('Movements', () => {
 
   it('should delete a movement', () => {
     cy.deleteEntity(model, state.updatedMockMovement);
-    cy.loadData(['courses']);
+    cy.loadData(['workouts']);
     getMovementDeleteBtn(state.updatedMockMovement).click();
     getMovementItem(state.updatedMockMovement).should('not.exist');
     getMovements().should('have.length', movements.length);
