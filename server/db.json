@@ -22,7 +22,15 @@
     {
       "id": "e619d3c2-00e6-4aa5-8fde-b29692553572",
       "title": "5k Run",
-      "description": "Run 3.1miles ludicrous speed"
+      "description": "Run 3.1miles ludicrous speed",
+      "movements": [
+        {
+          "id": "9380ab12-9b47-4c92-a2e4-68703c5a63e8",
+          "title": "Literally just running",
+          "description": "RUN",
+          "workoutId": "e619d3c2-00e6-4aa5-8fde-b29692553572"
+        }
+      ]
     }
   ],
   "movements": [
